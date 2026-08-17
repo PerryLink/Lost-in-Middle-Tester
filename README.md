@@ -16,13 +16,14 @@
 
 ## What it does
 
-Large language models tend to recall information at the start and end of a long context better than information in the middle. Lost-in-Middle-Tester measures this effect: it builds a long document, inserts a secret `SECRET_CODE_XXXX` code at a chosen position, asks a model to recover it, and records the success rate at each position.
+Large language models tend to recall information at the start and end of a long context better than information in the middle — a known limitation described in [Lost in the Middle: How Language Models Use Long Contexts](https://arxiv.org/abs/2307.03172). Lost-in-Middle-Tester measures this effect: it builds a long document, inserts a secret `SECRET_CODE_XXXX` code at a chosen position, asks a model to recover it, and records the success rate at each position.
 
 ## Features
 
 - Generates long-text test cases with an embedded verification code
 - Supports OpenAI and Anthropic providers
 - Outputs a U-curve chart (PNG) and a JSON report of per-position success rates
+- Detailed per-position statistics and success/failure counts
 - Cost estimation with a `--dry-run` preview
 - Rich terminal progress bars and result tables
 
@@ -75,6 +76,16 @@ poetry run lost-in-middle-tester test --model gpt-4 --dry-run
 | `--show-plot` | `True` | Whether to render the chart |
 | `--dry-run` | `False` | Preview configuration and cost |
 
+## How it works
+
+1. **Text generation** — builds roughly `--text-length` tokens of long text mixing Lorem Ipsum and knowledge paragraphs
+2. **Code insertion** — inserts a random `SECRET_CODE_XXXX` code at a chosen position (0.0–1.0)
+3. **Model testing** — asks the model to find the verification code in the document
+4. **Statistics** — records the success rate at each position
+5. **Visualization** — renders a U-curve chart and writes a JSON report
+
+Built with Typer + Rich, the OpenAI and Anthropic SDKs, and Matplotlib. Tests use pytest; Black and Ruff format the code.
+
 ## Development
 
 ```bash
@@ -82,6 +93,11 @@ poetry run pytest -v
 poetry run black src/
 poetry run ruff check src/
 ```
+
+## Related
+
+- [dsh-library](https://github.com/PerryLink/dsh-library) — the DSH plugin this tool was ported into
+- [PerryLink](https://github.com/PerryLink) — the PerryLink DSH Plugin Family
 
 ## License
 

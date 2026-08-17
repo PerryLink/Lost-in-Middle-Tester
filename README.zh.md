@@ -16,13 +16,14 @@
 
 ## 功能简介
 
-大语言模型在处理长文本时，对开头和结尾信息的记忆通常优于中间位置的信息。Lost-in-Middle-Tester 用于量化这一现象：它生成一篇长文档，在指定位置插入一个 `SECRET_CODE_XXXX` 形式的验证码，让模型找出该验证码，并统计每个位置的成功率。
+大语言模型在处理长文本时，对开头和结尾信息的记忆通常优于中间位置的信息——这是论文 [Lost in the Middle: How Language Models Use Long Contexts](https://arxiv.org/abs/2307.03172) 中描述的一个已知局限。Lost-in-Middle-Tester 用于量化这一现象：它生成一篇长文档，在指定位置插入一个 `SECRET_CODE_XXXX` 形式的验证码，让模型找出该验证码，并统计每个位置的成功率。
 
 ## 功能特性
 
 - 生成内嵌验证码的长文本测试用例
 - 支持 OpenAI 与 Anthropic 两种 API 提供商
 - 输出 U 型曲线图（PNG）与各位置成功率的 JSON 报告
+- 提供每个位置的详细统计与成功/失败总数
 - 提供成本估算与 `--dry-run` 预览模式
 - 使用 Rich 渲染终端进度条与结果表格
 
@@ -75,6 +76,16 @@ poetry run lost-in-middle-tester test --model gpt-4 --dry-run
 | `--show-plot` | `True` | 是否渲染图表 |
 | `--dry-run` | `False` | 预览配置与成本估算 |
 
+## 工作原理
+
+1. **文本生成** —— 生成约 `--text-length` 个 token 的长文本，混合 Lorem Ipsum 与知识段落
+2. **验证码插入** —— 在选定位置（0.0–1.0）插入随机 `SECRET_CODE_XXXX` 验证码
+3. **模型测试** —— 要求模型在文档中找出该验证码
+4. **结果统计** —— 记录每个位置的成功率
+5. **可视化** —— 渲染 U 型曲线图并写入 JSON 报告
+
+基于 Typer + Rich、OpenAI 与 Anthropic SDK 以及 Matplotlib 构建。测试使用 pytest，Black 与 Ruff 用于代码格式化。
+
 ## 开发
 
 ```bash
@@ -82,6 +93,11 @@ poetry run pytest -v
 poetry run black src/
 poetry run ruff check src/
 ```
+
+## 相关项目
+
+- [dsh-library](https://github.com/PerryLink/dsh-library) —— 本工具已移植进的 DSH 插件
+- [PerryLink](https://github.com/PerryLink) —— PerryLink DSH 插件家族
 
 ## 许可证
 
