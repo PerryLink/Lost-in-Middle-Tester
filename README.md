@@ -1,6 +1,7 @@
 <div align="center">
 
 # Lost-in-Middle-Tester
+[![Gitee](https://img.shields.io/badge/Gitee-mirror-c71d23?logo=gitee)](https://gitee.com/perrylink/lost-in-middle-tester)
 
 **A CLI tool that tests and visualizes the "Lost-in-the-Middle" phenomenon in large language models.**
 
